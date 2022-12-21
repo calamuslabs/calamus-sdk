@@ -4,7 +4,7 @@ SDK to interact with Calamus Finance
 
 ## JS SDK to interact with Calamus function
 
-This package allows you to `createCalamusStream`, `getCalamusStream`
+This package allows you to `createCalamusStream`, `getCalamusIncomeStream`, `getCalamusOutcomeStream`, `getCalamusStreamByID`, `withdrawCalamusStream`, `cancelCalamusStream`, `transferCalamusStream`, `topupCalamusStream`, `balanceOf`, `feeOf`
 
 ## Installation
 
@@ -176,14 +176,14 @@ CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87a4845C977eADc789B479e
 
 ```typescript
 /**
-     * Topup Stream.
-     *
-     * @param streamID (string): ID of stream
-     * @param tokenSymbol (string): token want to top up
-     * @param amount (string): amount want to top up
-     *
-     * @return Promise<Event>
-     */
+ * Topup Stream.
+ *
+ * @param streamID (string): ID of stream
+ * @param tokenSymbol (string): token want to top up
+ * @param amount (string): amount want to top up
+ *
+ * @return Promise<Event>
+ */
 
 CalamusInstance.topupCalamusStream("BNBT", "26", "10")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
@@ -193,13 +193,13 @@ CalamusInstance.topupCalamusStream("BNBT", "26", "10")
 
 ```typescript
 /**
-     * Balance of user in stream.
-     *
-     * @param streamID (string): ID of stream
-     * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
-     *
-     * @return Promise<string>
-     */
+ * Balance of user in stream.
+ *
+ * @param streamID (string): ID of stream
+ * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
+ *
+ * @return Promise<string>
+ */
 
 CalamusInstance.balanceOf("BNBT", "26", "10")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
