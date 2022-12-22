@@ -204,3 +204,19 @@ CalamusInstance.topupCalamusStream("BNBT", "26", "10")
 CalamusInstance.balanceOf("BNBT", "26", "10")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
+
+## Get fee of stream
+
+```typescript
+/**
+     * Balance of user in stream.
+     *
+     * @param streamID (string): ID of stream
+     * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
+     *
+     * @return Promise<string>
+     */
+
+CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
+    .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
+```

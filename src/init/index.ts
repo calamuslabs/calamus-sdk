@@ -133,7 +133,7 @@ export class Calamus {
      *
      * @return Promise<ListStream[]>
      */
-    async getCalamusIncomeStream(address?: string): Promise<StreamToRow[]> {
+    async getCalamusIncomingStream(address?: string): Promise<StreamToRow[]> {
         const account = await checkSigner(this.network, this.isTestNetwork);
         if (!address) {
             address = account;
@@ -184,7 +184,7 @@ export class Calamus {
      *
      * @return Promise<ListStream[]>
      */
-    async getCalamusOutcomeStream(address?: string): Promise<StreamToRow[]> {
+    async getCalamusOutgoingStream(address?: string): Promise<StreamToRow[]> {
         const account = await checkSigner(this.network, this.isTestNetwork);
         if (!address) {
             address = account;
