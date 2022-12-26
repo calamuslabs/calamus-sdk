@@ -37,7 +37,7 @@ export const MainChainInfo: Chain = {
 export const TestChainInfo: Chain = {
     'bnb': {
         id: 97,
-        contractAddress: "0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04",
+        contractAddress: "0x16bBc1B5A473C57E220Abe51A3ecce59A82cb0eb",
         wssAddress: "https://data-seed-prebsc-1-s3.binance.org:8545",
         name: "Bnb Testnet",
         rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545/",

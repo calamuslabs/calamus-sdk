@@ -13,12 +13,13 @@ import {ethers} from "ethers";
 import {CALAMUS_API} from "../data/const";
 
 declare type CreateStreamProps = {
-    releaseAmount: ethers.BigNumber, // number token recipient can get
+    releaseAmount: number, // number token recipient can get
     recipient: string,
     startTime: number,
     stopTime: number,
     initialRelease: number, // initial token recipient can get when withdraw ( percent )
     releaseFrequency: number, // number token release in every second
+    releaseFrequencyType: number, // type of frequency
     transferPrivilege: number // who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
     cancelPrivilege: number // who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
     tokenAddress: string // token want to stream,
@@ -34,19 +35,22 @@ export class Calamus {
     isTestNetwork: boolean;
     token: Token = {chainID: 0, address: "", abbr: "", logo: "", decimal: 0};
     networkInfo: ChainItem;
+    covanlentKey: string;
 
     /**
      * Initial variable for stream.
      *
      * @param chain - Name of the chain will stream
      * @param isTestNetwork - true/false: is test network or not
+     * @param covalentKey - string: key get from covalent kpi
      *
      */
-    constructor(chain: string, isTestNetwork: boolean) {
+    constructor(chain: string, isTestNetwork: boolean, covalentKey: string) {
         this.network = chain;
         this.isTestNetwork = isTestNetwork;
         this.networkInfo = isTestNetwork ? TestChainInfo[chain] : MainChainInfo[chain];
         this.token.chainID = isTestNetwork ? TestChainInfo[chain].id : MainChainInfo[chain].id;
+        this.covanlentKey = covalentKey;
     }
 
     /**
@@ -57,7 +61,8 @@ export class Calamus {
      * @param startTime: stream will start at,
      * @param stopTime: stream will end at,
      * @param initialRelease:  initial token recipient can get when withdraw ( percent )
-     * @param releaseFrequency: number token release in every second
+     * @param releaseFrequency:  number of time between each release (releaseFrequencyType)
+     * @param releaseFrequencyType: unit of releaseFrequency, 1: second, 2: minute, 3: hour, 4: day, 5: week, 6: month, 7: year
      * @param transferPrivilege: who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
      * @param cancelPrivilege: who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
      * @param tokenAddress: token want to stream
@@ -74,6 +79,7 @@ export class Calamus {
                                   stopTime,
                                   initialRelease,
                                   releaseFrequency,
+                                  releaseFrequencyType,
                                   transferPrivilege,
                                   cancelPrivilege,
                                   contractTitle,
@@ -92,7 +98,8 @@ export class Calamus {
                 body: JSON.stringify({
                     chainID: this.token.chainID,
                     account: account,
-                    tokenSymbol: tokenSymbol
+                    tokenSymbol: tokenSymbol,
+                    covalentKey: this.covanlentKey
                 })
             }
         );
@@ -115,6 +122,7 @@ export class Calamus {
                 stopTime,
                 initialRelease,
                 releaseFrequency,
+                releaseFrequencyType,
                 transferPrivilege,
                 cancelPrivilege,
                 token.address,
@@ -379,7 +387,8 @@ export class Calamus {
                 body: JSON.stringify({
                     chainID: this.token.chainID,
                     account: account,
-                    tokenSymbol: tokenSymbol
+                    tokenSymbol: tokenSymbol,
+                    covalentKey: this.covanlentKey
                 })
             }
         );

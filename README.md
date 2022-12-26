@@ -4,16 +4,18 @@ SDK to interact with Calamus Finance
 
 ## JS SDK to interact with Calamus function
 
-This package allows you to `createCalamusStream`, `getCalamusIncomeStream`, `getCalamusOutcomeStream`, `getCalamusStreamByID`, `withdrawCalamusStream`, `cancelCalamusStream`, `transferCalamusStream`, `topupCalamusStream`, `balanceOf`, `feeOf`
+This package allows you to `createCalamusStream`, `getCalamusIncomingStream`, `getCalamusOutgoingStream`
+, `getCalamusStreamByID`, `withdrawCalamusStream`, `cancelCalamusStream`, `transferCalamusStream`, `topupCalamusStream`
+, `balanceOf`, `feeOf`
 
 ## Installation
 
 `npm i calamus-sdk`
 
-## Initial
+## Inialize
 
-Before creating and manipulating streams Calamus instance must be created. All streams functions are methods on this
-instance.
+Before creating and interacting with Calamus streams, an instance must be created. All streams functions are methods
+following on this instance.
 
 ```javascript
 import {Calamus} from "calamus-sdk";
@@ -23,10 +25,13 @@ import {Calamus} from "calamus-sdk";
  *
  * @param chain - Name of the chain will stream (now support only bnb)
  * @param isTestNetwork - true/false: is test network or not
+ * @param covalentKey - Key get from covalent API
  *
  */
-const CalamusInstance = new Calamus('bnb', false);
+const CalamusInstance = new Calamus('bnb', false, 'covalent_key');
 ```
+
+_You can come https://www.covalenthq.com/platform/#/auth/register/, register an account then get API key to provide to Calamus Initial_
 
 ## Create Stream
 
@@ -34,20 +39,24 @@ const CalamusInstance = new Calamus('bnb', false);
 /**
  * Create Calamus Stream.
  *
- * @param releaseAmount (BigNumber): number token recipient can get
+ * @param releaseAmount (number): number token recipient can get
  * @param recipient (string): address of recipient,
  * @param startTime (number): stream will start at (second),
  * @param stopTime (number): stream will end at (second),
  * @param initialRelease (number):  initial token recipient can get when withdraw ( percent )
- * @param releaseFrequency (number): number token release in every second
+ * @param releaseFrequency (number): number of time between each release (releaseFrequencyType)
+ * @param releaseFrequencyType (number): unit of releaseFrequency, 1: second, 2: minute, 3: hour, 4: day, 5: week, 6: month, 7: year
  * @param transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
  * @param cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
- * @param tokenAddress (string): token want to stream
+ * @param tokenAddress (string): amount of token user want to stream
  * @param contractTitle (string): title of the contract
  * @param emailAddress (string): email will be notified when stream change
  * @param tokenSymbol (string): symbol of token like 'BNB', 'BNBT', ...
  *
- * @return Promise<Event>
+ * @return Promise<{
+ *  stream_id: id of stream, 
+ *  trx_hash: hash of transaction
+ * }>
  */
 
 createCalamusStream({
@@ -87,27 +96,85 @@ CalamusInstance.createCalamusStream({
 /**
  * Get Calamus Streams.
  *
- * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
+ * @param address (string): wallet address (if this is not provided, address of current account on metamask will be used)
  *
- * @return Promise<ListStream[]>
+ * @return Promise<ListStream[
+ * <{
+ *  cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
+ *  chain (string): chain's name,
+ *  contractTitle (string): title of contract 
+ *  emailAddress (string): email will get notify in contract
+ *  initialRelease (string): number of initial token will get when withdraw
+ *  isVesting (boolean): false
+ *  originStatus (number): original status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
+ *  status (number): current status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
+ *  ratePerTime (string): number token stream in one unit time,
+ *  recipient (string): wallet address of recipient
+ *  sender (string): wallet address of sender
+ *  releaseAmount (string): number of total token in stream
+ *  releaseFrequency (number): number of time between each release (releaseFrequencyType)
+ *  releaseFrequencyType (number): unit of releaseFrequency, 1: second, 2: minute, 3: hour, 4: day, 5: week, 6: month, 7: year
+ *  releaseRate (string): token / one unit time
+ *  startTime (number): time stream start
+ *  stopTime (number): time stream end
+ *  streamId (number): id of stream
+ *  tokenAbbr (string): abbreviation for token  
+ *  tokenDecimal (number): decimal of token
+ *  tokenId (string): address of token
+ *  tokenLogo (string): Logo of token (URL)
+ *  transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
+ *  trxHash (string): hash of transaction
+ *  type (string): type of stream in list (Icoming/Outgoing)
+ *  withdrawAmount (string): number of token user have withdrawn
+ * }>
+ * ]>
  */
 
-CalamusInstance.getCalamusIncomeStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
+CalamusInstance.getCalamusIncomingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
-## Get List Outcome Streams
+## Get List Outgoing Streams
 
 ```typescript
 /**
  * Get Calamus Streams.
  *
- * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
+ * @param address (string): wallet address (if this is not provided, address of current account on metamask will be used)
  *
- * @return Promise<ListStream[]>
+ * @return Promise<ListStream[
+ * <{
+ *  cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
+ *  chain (string): chain's name,
+ *  contractTitle (string): title of contract 
+ *  emailAddress (string): email will get notify in contract
+ *  initialRelease (string): number of initial token will get when withdraw
+ *  isVesting (boolean): false
+ *  originStatus (number): original status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
+ *  status (number): current status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
+ *  ratePerTime (string): number token stream in one unit time,
+ *  recipient (string): wallet address of recipient
+ *  sender (string): wallet address of sender
+ *  releaseAmount (string): number of total token in stream
+ *  releaseFrequency (number): number of time between each release (releaseFrequencyType)
+ *  releaseFrequencyType (number): unit of releaseFrequency, 1: second, 2: minute, 3: hour, 4: day, 5: week, 6: month, 7: year
+ *  releaseRate (string): token / one unit time
+ *  startTime (number): time stream start
+ *  stopTime (number): time stream end
+ *  streamId (number): id of stream
+ *  tokenAbbr (string): abbreviation for token  
+ *  tokenDecimal (number): decimal of token
+ *  tokenId (string): address of token
+ *  tokenLogo (string): Logo of token (URL)
+ *  transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
+ *  trxHash (string): hash of transaction
+ *  type (string): type of stream in list (Icoming/Outgoing)
+ *  withdrawAmount (string): number of token user have withdrawn
+ * }>
+ * ]>
  */
 
-CalamusInstance.getCalamusOutcomeStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
+CalamusInstance.getCalamusOutgoingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
@@ -119,7 +186,34 @@ CalamusInstance.getCalamusOutcomeStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036
  *
  * @param streamID (string): id of stream
  *
- * @return Promise<ListStream[]>
+ * @return Promise<{
+ *  cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
+ *  chain (string): chain's name,
+ *  contractTitle (string): title of contract 
+ *  emailAddress (string): email will get notify in contract
+ *  initialRelease (string): number of initial token will get when withdraw
+ *  isVesting (boolean): false
+ *  originStatus (number): original status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
+ *  status (number): current status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
+ *  ratePerTime (string): number token stream in one unit time,
+ *  recipient (string): wallet address of recipient
+ *  sender (string): wallet address of sender
+ *  releaseAmount (string): number of total token in stream
+ *  releaseFrequency (number): number of time between each release (releaseFrequencyType)
+ *  releaseFrequencyType (number): unit of releaseFrequency, 1: second, 2: minute, 3: hour, 4: day, 5: week, 6: month, 7: year
+ *  releaseRate (string): token / one unit time
+ *  startTime (number): time stream start
+ *  stopTime (number): time stream end
+ *  streamId (number): id of stream
+ *  tokenAbbr (string): abbreviation for token  
+ *  tokenDecimal (number): decimal of token
+ *  tokenId (string): address of token
+ *  tokenLogo (string): Logo of token (URL)
+ *  transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
+ *  trxHash (string): hash of transaction
+ *  type (string): type of stream in list (Icoming/Outgoing)
+ *  withdrawAmount (string): number of token user have withdrawn
+ * }>
  */
 CalamusInstance.getCalamusStreamByID("24")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
@@ -132,10 +226,13 @@ CalamusInstance.getCalamusStreamByID("24")
  * Withdraw Stream.
  *
  * @param streamID (string): ID of stream
- * @param amount (string): amount token user want to withdraw
+ * @param amount (string): amount of token user want to withdraw
  * @param withdrawAll (boolean): withdraw all amount or not
  *
- * @return Promise<Event>
+ * @return Promise<{
+ *  stream_id: id of stream, 
+ *  trx_hash: hash of transaction
+ * }>
  */
 CalamusInstance.withdrawCalamusStream("2", "10", false)
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
@@ -149,7 +246,10 @@ CalamusInstance.withdrawCalamusStream("2", "10", false)
  *
  * @param streamID (string): ID of stream
  *
- * @return Promise<Event>
+ * @return Promise<{
+ *  stream_id: id of stream, 
+ *  trx_hash: hash of transaction
+ * }>
  */
 
 CalamusInstance.cancelCalamusStream("24")
@@ -165,7 +265,10 @@ CalamusInstance.cancelCalamusStream("24")
  * @param streamID (string): ID of stream
  * @param newRecipient (string): new recipient address
  *
- * @return Promise<Event>
+ * @return Promise<{
+ *  stream_id: id of stream, 
+ *  trx_hash: hash of transaction
+ * }>
  */
 
 CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87a4845C977eADc789B479e80af0A0")
@@ -179,10 +282,13 @@ CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87a4845C977eADc789B479e
  * Topup Stream.
  *
  * @param streamID (string): ID of stream
- * @param tokenSymbol (string): token want to top up
+ * @param tokenSymbol (string): amount of token user want to  top up
  * @param amount (string): amount want to top up
  *
- * @return Promise<Event>
+ * @return Promise<{
+ *  stream_id: id of stream, 
+ *  trx_hash: hash of transaction
+ * }>
  */
 
 CalamusInstance.topupCalamusStream("BNBT", "26", "10")
@@ -196,9 +302,9 @@ CalamusInstance.topupCalamusStream("BNBT", "26", "10")
  * Balance of user in stream.
  *
  * @param streamID (string): ID of stream
- * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
+ * @param address (string): wallet address (if this is not provided, address of current account on metamask will be used)
  *
- * @return Promise<string>
+ * @return Promise<string: balance of stream>
  */
 
 CalamusInstance.balanceOf("BNBT", "26", "10")
@@ -209,13 +315,13 @@ CalamusInstance.balanceOf("BNBT", "26", "10")
 
 ```typescript
 /**
-     * Balance of user in stream.
-     *
-     * @param streamID (string): ID of stream
-     * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
-     *
-     * @return Promise<string>
-     */
+ * Balance of user in stream.
+ *
+ * @param streamID (string): ID of stream
+ * @param address (string): wallet address (if this is not provided, address of current account on metamask will be used)
+ *
+ * @return Promise<string: fee of stream>
+ */
 
 CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));

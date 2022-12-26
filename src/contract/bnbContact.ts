@@ -4,6 +4,7 @@ import {ChainItem, MainChainInfo, TestChainInfo} from '../data/chain';
 import {BigNumber, ethers} from "ethers";
 import {CALAMUS_API, erc20TokenContractAbi} from "../data/const";
 import {checkMetaMask} from "../metaMaskUtils";
+import {calculateReleaseAmount, calculateReleaseFrequency} from "./utils";
 
 const releaseRateMap = new Map([
     [0, "Second(s)"],
@@ -27,7 +28,6 @@ export type StreamToRow = {
     emailAddress: string,
     recipient: string,
     sender: string,
-    currentAddress: string,
     tokenAbbr: string,
     tokenLogo: string,
     tokenId: string,
@@ -116,7 +116,6 @@ export const convertStream = async (streams: any[], currentAddress: string, chai
                 emailAddress: "",
                 recipient: stream.recipient,
                 sender: stream.sender,
-                currentAddress: currentAddress,
                 tokenAbbr: "",
                 tokenLogo: "",
                 tokenDecimal: 0,
@@ -208,7 +207,7 @@ export const getBalanceOf = async (account: any, calamusContract: any, streamId:
     if (!account) {
         return false;
     }
-    const balance =  await calamusContract.balanceOf(streamId, account);
+    const balance = await calamusContract.balanceOf(streamId, account);
     return balance.toString();
 }
 
@@ -222,33 +221,40 @@ export const getFeeOf = async (account: any, calamusContract: any, tokenAddress:
 
 export const createStream = async (account: any,
                                    calamusContract: any,
-                                   releaseAmount: ethers.BigNumber,
+                                   releaseAmount: number,
                                    recipient: string,
                                    startTime: number,
                                    stopTime: number,
                                    initialRelease: number,
                                    releaseFrequency: number,
+                                   releaseFrequencyType: number,
                                    transferPrivilege: number,
                                    cancelPrivilege: number,
                                    tokenAddress: string,
                                    networkInfo: ChainItem) => {
+    // @ts-ignore
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const tokenContractInstance = new ethers.Contract(tokenAddress, erc20TokenContractAbi, signer);
+    let fee = await getFeeOf(account, calamusContract, tokenAddress);
+    fee = ethers.BigNumber.from(fee);
+    let frequencyInSeconds = calculateReleaseFrequency(releaseFrequency, releaseFrequencyType)
+    let correctAmount = calculateReleaseAmount(releaseFrequency, releaseFrequencyType, startTime, stopTime, releaseAmount, networkInfo.nativeCurrency.decimals, fee);
+
     if (tokenAddress !== networkInfo.contractAddress) {
-        // @ts-ignore
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const tokenContractInstance = new ethers.Contract(tokenAddress, erc20TokenContractAbi, signer);
         let approveRequest = await tokenContractInstance.approve(
             networkInfo.contractAddress,
-            releaseAmount
+            correctAmount
         );
         await approveRequest.wait();
+
         let createStreamRequest = await calamusContract.createStream(
-            releaseAmount,
+            correctAmount,
             recipient,
             startTime,
             stopTime,
             initialRelease,
-            releaseFrequency,
+            frequencyInSeconds,
             transferPrivilege,
             cancelPrivilege,
             tokenAddress
@@ -258,8 +264,7 @@ export const createStream = async (account: any,
         let createStreamEvent = result.events[0];
         return {stream_id: createStreamEvent.args.streamId.toString(), trx_hash: createStreamEvent.transactionHash}
     } else {
-        let createStreamRequest = await calamusContract.createStream(
-            releaseAmount,
+        console.log('a',correctAmount,
             recipient,
             startTime,
             stopTime,
@@ -268,7 +273,18 @@ export const createStream = async (account: any,
             transferPrivilege,
             cancelPrivilege,
             tokenAddress,
-            {value: releaseAmount}
+            {value: correctAmount})
+        let createStreamRequest = await calamusContract.createStream(
+            correctAmount,
+            recipient,
+            startTime,
+            stopTime,
+            initialRelease,
+            releaseFrequency,
+            transferPrivilege,
+            cancelPrivilege,
+            tokenAddress,
+            {value: correctAmount}
         );
         let result = await createStreamRequest.wait();
         let createStreamEvent = result.events[0];
@@ -355,8 +371,7 @@ export const topupStream = async (account: any, calamusContract: any, streamID: 
             })
             return result;
         }
-    }
-    else {
+    } else {
         const topupRequest = await calamusContract.topupStream(
             streamID,
             amount,
