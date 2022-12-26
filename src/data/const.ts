@@ -1,4 +1,4 @@
-export const CALAMUS_API = 'http://localhost:3000';
+export const CALAMUS_API = 'https://app.calamus.finance/';
 export const erc20TokenContractAbi = [
     {
         "constant": true,
