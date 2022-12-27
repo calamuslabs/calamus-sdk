@@ -433,8 +433,8 @@ export class Calamus {
     /**
      * Fee of account or token
      *
-     * @param address (string): ID of stream
-     * @param tokenAddress (string): wallet address (if this not provide, address of current account on metamask will be use)
+     * @param tokenAddress (string): address of token
+     * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
      *
      * @return Promise<string>
      */

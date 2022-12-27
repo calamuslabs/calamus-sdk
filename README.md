@@ -360,7 +360,7 @@ const result = await CalamusInstance.topupCalamusStream("BNBT", "26", "10")
  * @return Promise<string: balance of stream>
  */
 
-CalamusInstance.balanceOf("BNBT", "26", "10")
+CalamusInstance.balanceOf("15", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
@@ -375,7 +375,7 @@ const result = await CalamusInstance.balanceOf("BNBT", "26", "10")
 /**
  * Balance of user in stream.
  *
- * @param streamID (string): ID of stream
+ * @param tokenAddress (string): address of token
  * @param address (string): wallet address (if this is not provided, address of current account on metamask will be used)
  *
  * @return Promise<string: fee of stream>
@@ -386,6 +386,7 @@ CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D4
 ```
 
 or use async await function
+
 ```typescript
 const result = await CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
 ```
