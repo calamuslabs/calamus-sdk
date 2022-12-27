@@ -2,7 +2,7 @@
 import Calamus from "../abi/Calamus.json";
 import {ChainItem, MainChainInfo, TestChainInfo} from '../data/chain';
 import {BigNumber, ethers} from "ethers";
-import {CALAMUS_API, erc20TokenContractAbi} from "../data/const";
+import {CALAMUS_API, CALAMUS_TESTNET_API, erc20TokenContractAbi} from "../data/const";
 import {checkMetaMask} from "../metaMaskUtils";
 import {calculateReleaseAmount, calculateReleaseFrequency} from "./utils";
 
@@ -62,7 +62,7 @@ export const bnbLoadContract = async (network: string, test: boolean) => {
     return new ethers.Contract(contractAddress, Calamus.abi, signer);
 }
 
-export const convertStream = async (streams: any[], currentAddress: string, chainName: string) => {
+export const convertStream = async (streams: any[], currentAddress: string, chainName: string, isTestNetwork: boolean) => {
     try {
         let convertedStreams: StreamToRow[] = [];
         let streamIds: any[] = [];
@@ -145,7 +145,7 @@ export const convertStream = async (streams: any[], currentAddress: string, chai
         });
 
         if (streamIds.length) {
-            let recipientsReq = await fetch(`${CALAMUS_API}/api/recipient/get-recipients`, {
+            let recipientsReq = await fetch(`${isTestNetwork ? CALAMUS_TESTNET_API : CALAMUS_API}/api/recipient/get-recipients`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

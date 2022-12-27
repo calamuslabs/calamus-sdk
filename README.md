@@ -90,6 +90,23 @@ CalamusInstance.createCalamusStream({
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
+or use async await function
+```typescript
+const result = await CalamusInstance.createCalamusStream({
+    releaseAmount: 30,
+    recipient: "0xF49f0bDbA38c55b65728c3C83b65DFd30A2e0C40",
+    startTime: 1671624853,
+    stopTime: 1671724853,
+    initialRelease: 0,
+    releaseFrequency: 1,
+    transferPrivilege: 1,
+    cancelPrivilege: 1,
+    contractTitle: 'New Contract 01',
+    emailAddress: 'example@gmail.com',
+    tokenSymbol: "BNBT"
+})
+```
+
 ## Get List Incoming Streams
 
 ```typescript
@@ -132,6 +149,11 @@ CalamusInstance.createCalamusStream({
 
 CalamusInstance.getCalamusIncomingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
+```
+
+or use async await function
+```typescript
+const incomingList = await CalamusInstance.getCalamusIncomingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
 ```
 
 ## Get List Outgoing Streams
@@ -178,6 +200,11 @@ CalamusInstance.getCalamusOutgoingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e03
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
+or use async await function
+```typescript
+const outGoingList = await CalamusInstance.getCalamusOutgoingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
+```
+
 ## Get Single Stream By ID
 
 ```typescript
@@ -219,6 +246,11 @@ CalamusInstance.getCalamusStreamByID("24")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
+or use async await function
+```typescript
+const stream = await CalamusInstance.getCalamusStreamByID("24")
+```
+
 ## Withdraw Stream
 
 ```typescript
@@ -236,6 +268,11 @@ CalamusInstance.getCalamusStreamByID("24")
  */
 CalamusInstance.withdrawCalamusStream("2", "10", false)
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
+```
+
+or use async await function
+```typescript
+const result = await CalamusInstance.withdrawCalamusStream("2", "10", false)
 ```
 
 ## Cancel Stream
@@ -256,6 +293,12 @@ CalamusInstance.cancelCalamusStream("24")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
+or use async await function
+```typescript
+const result = await CalamusInstance.cancelCalamusStream("24")
+```
+
+
 ## Transfer Stream
 
 ```typescript
@@ -273,6 +316,11 @@ CalamusInstance.cancelCalamusStream("24")
 
 CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87a4845C977eADc789B479e80af0A0")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
+```
+
+or use async await function
+```typescript
+const result = await CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87a4845C977eADc789B479e80af0A0")
 ```
 
 ## Topup Stream
@@ -295,6 +343,11 @@ CalamusInstance.topupCalamusStream("BNBT", "26", "10")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
+or use async await function
+```typescript
+const result = await CalamusInstance.topupCalamusStream("BNBT", "26", "10")
+```
+
 ## Get Balance
 
 ```typescript
@@ -311,6 +364,11 @@ CalamusInstance.balanceOf("BNBT", "26", "10")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
+or use async await function
+```typescript
+const result = await CalamusInstance.balanceOf("BNBT", "26", "10")
+```
+
 ## Get fee of stream
 
 ```typescript
@@ -325,4 +383,9 @@ CalamusInstance.balanceOf("BNBT", "26", "10")
 
 CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
+```
+
+or use async await function
+```typescript
+const result = await CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
 ```

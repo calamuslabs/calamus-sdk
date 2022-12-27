@@ -10,7 +10,7 @@ import {
 } from "../contract/bnbContact";
 import {ChainItem, MainChainInfo, TestChainInfo} from "../data/chain"
 import {ethers} from "ethers";
-import {CALAMUS_API} from "../data/const";
+import {CALAMUS_API, CALAMUS_TESTNET_API} from "../data/const";
 
 declare type CreateStreamProps = {
     releaseAmount: number, // number token recipient can get
@@ -91,7 +91,7 @@ export class Calamus {
             console.log('No Account found on metamask');
             return false;
         }
-        const tokenInfo = await fetch(`${CALAMUS_API}/api/token/get`,
+        const tokenInfo = await fetch(`${this.isTestNetwork ? CALAMUS_TESTNET_API : CALAMUS_API}/api/token/get`,
             {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
@@ -181,7 +181,7 @@ export class Calamus {
             })
 
             const ownStreamsJson = await ownStreams.json();
-            return await convertStream(ownStreamsJson.data.streams, address, this.network);
+            return await convertStream(ownStreamsJson.data.streams, address, this.network, this.isTestNetwork);
         } else return [];
     };
 
@@ -232,7 +232,7 @@ export class Calamus {
             })
 
             const ownStreamsJson = await ownStreams.json();
-            return await convertStream(ownStreamsJson.data.streams, address, this.network);
+            return await convertStream(ownStreamsJson.data.streams, address, this.network, this.isTestNetwork);
         } else return [];
     };
 
@@ -278,7 +278,7 @@ export class Calamus {
             }),
         })
         const ownStreamsJson = await ownStreams.json();
-        const streamsConverted = await convertStream([ownStreamsJson.data.stream], account, this.network);
+        const streamsConverted = await convertStream([ownStreamsJson.data.stream], account, this.network, this.isTestNetwork);
         return streamsConverted[0];
     };
 
@@ -380,7 +380,7 @@ export class Calamus {
             console.log('No Account found on metamask');
             return false;
         }
-        const tokenInfo = await fetch(`${CALAMUS_API}/api/token/get`,
+        const tokenInfo = await fetch(`${this.isTestNetwork ? CALAMUS_TESTNET_API : CALAMUS_API}/api/token/get`,
             {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
