@@ -376,7 +376,7 @@ const result = await CalamusInstance.balanceOf("BNBT", "26", "10")
  * Balance of user in stream.
  *
  * @param tokenAddress (string): address of token
- * @param address (string): wallet address (if this is not provided, address of current account on metamask will be used)
+ * @param address (string): wallet address (if this is not provided, address of current account on metamask will be used). 
  *
  * @return Promise<string: fee of stream>
  */
@@ -390,3 +390,5 @@ or use async await function
 ```typescript
 const result = await CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
 ```
+
+_address_ always takes precedence over _tokenAddress_, if provided _address_ not return fee, then _tokenAddress_ will be used 
