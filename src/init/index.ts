@@ -10,7 +10,6 @@ import {
 } from "../contract/bnbContact";
 import {ChainItem, MainChainInfo, TestChainInfo} from "../data/chain"
 import {ethers} from "ethers";
-import {CALAMUS_API, CALAMUS_TESTNET_API} from "../data/const";
 
 declare type CreateStreamProps = {
     releaseAmount: number, // number token recipient can get
@@ -25,7 +24,6 @@ declare type CreateStreamProps = {
     tokenAddress: string // token want to stream,
     contractTitle: string;
     emailAddress: string;
-    tokenSymbol: string;
 };
 
 declare type Token = { chainID: number, address: string, abbr: string, logo: string, decimal: number };
@@ -65,10 +63,9 @@ export class Calamus {
      * @param releaseFrequencyType: unit of releaseFrequency, 1: second, 2: minute, 3: hour, 4: day, 5: week, 6: month, 7: year
      * @param transferPrivilege: who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
      * @param cancelPrivilege: who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
-     * @param tokenAddress: token want to stream
      * @param contractTitle: title of the contract
      * @param emailAddress: email will be notified when stream change
-     * @param tokenSymbol: symbol of token like 'BNB', 'BNBT', ...
+     * @param tokenAddress: address of token want to stream
      *
      * @return Promise<Event>
      */
@@ -84,32 +81,55 @@ export class Calamus {
                                   cancelPrivilege,
                                   contractTitle,
                                   emailAddress,
-                                  tokenSymbol
+                                  tokenAddress
                               }: CreateStreamProps): Promise<unknown> {
         const account = await checkSigner(this.network, this.isTestNetwork);
         if (!account) {
             console.log('No Account found on metamask');
             return false;
         }
-        const tokenInfo = await fetch(`${this.isTestNetwork ? CALAMUS_TESTNET_API : CALAMUS_API}/api/token/get`,
-            {
-                method: "POST",
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    chainID: this.token.chainID,
-                    account: account,
-                    tokenSymbol: tokenSymbol,
-                    covalentKey: this.covanlentKey
-                })
-            }
-        );
+        const tokenInfo = await fetch(`https://api.covalenthq.com/v1/${this.token.chainID}/address/${account}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${this.covanlentKey}`);
         const tokenInfoJson = await tokenInfo.json();
-        const token = {
+        let tokens = tokenInfoJson.data.items;
+        let token = {
             chainId: this.token.chainID,
-            address: tokenInfoJson.tokenAddress,
-            abbr: tokenInfoJson.tokenAbbr,
-            logo: tokenInfoJson.tokenLogo,
-            decimal: tokenInfoJson.tokenDecimal
+            amount: "",
+            balance: "",
+            name: "",
+            abbr: "",
+            decimal: "",
+            address: "",
+            logo: ""
+        }
+        const chainsInfo = this.isTestNetwork ? TestChainInfo : MainChainInfo;
+        if (tokens && tokens.length) {
+            for (let i = 0; i < tokens.length; i++) {
+                if (tokenAddress === tokens[i]["contract_address"]) {
+                    let updateTokenAddress = tokens[i]["contract_address"];
+                    if (tokens[i]["contract_ticker_symbol"] === "PHOTON") {
+                        updateTokenAddress = chainsInfo["evmos"].contractAddress;
+                    }
+                    if (tokens[i]["contract_ticker_symbol"] === "BNBT") {
+                        updateTokenAddress = chainsInfo["bnb"].contractAddress;
+                    }
+                    if (tokens[i]["contract_ticker_symbol"] === "BNB") {
+                        updateTokenAddress = chainsInfo["bnb"].contractAddress;
+                    }
+                    if (tokens[i]["contract_ticker_symbol"] === "MATIC") {
+                        updateTokenAddress = chainsInfo["polygon"].contractAddress;
+                    }
+                    token = {
+                        chainId: this.token.chainID,
+                        amount: tokens[i]["quote"],
+                        balance: tokens[i]["balance"],
+                        name: tokens[i]["contract_name"],
+                        abbr: tokens[i]["contract_ticker_symbol"],
+                        decimal: tokens[i]["contract_decimals"],
+                        address: updateTokenAddress,
+                        logo: tokens[i]["logo_url"]
+                    }
+                }
+            }
         }
 
         const calamusContract = await bnbLoadContract(this.network, this.isTestNetwork);
@@ -368,37 +388,60 @@ export class Calamus {
      * Topup Stream.
      *
      * @param streamID: ID of stream
-     * @param tokenSymbol: token want to top up
+     * @param tokenAddress: address of token want to top up
      * @param amount: amount want to top up
      *
      * @return Promise<Event>
      */
-    async topupCalamusStream(tokenSymbol: string, streamID: string, amount: string): Promise<any> {
+    async topupCalamusStream(tokenAddress: string, streamID: string, amount: string): Promise<any> {
         let account = await checkSigner(this.network, this.isTestNetwork);
         const calamusContract = await bnbLoadContract(this.network, this.isTestNetwork);
         if (!account) {
             console.log('No Account found on metamask');
             return false;
         }
-        const tokenInfo = await fetch(`${this.isTestNetwork ? CALAMUS_TESTNET_API : CALAMUS_API}/api/token/get`,
-            {
-                method: "POST",
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    chainID: this.token.chainID,
-                    account: account,
-                    tokenSymbol: tokenSymbol,
-                    covalentKey: this.covanlentKey
-                })
-            }
-        );
+        const tokenInfo = await fetch(`https://api.covalenthq.com/v1/${this.token.chainID}/address/${account}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${this.covanlentKey}`);
         const tokenInfoJson = await tokenInfo.json();
-        const token = {
+        let tokens = tokenInfoJson.data.items;
+        let token = {
             chainId: this.token.chainID,
-            address: tokenInfoJson.tokenAddress,
-            abbr: tokenInfoJson.tokenAbbr,
-            logo: tokenInfoJson.tokenLogo,
-            decimal: tokenInfoJson.tokenDecimal
+            amount: "",
+            balance: "",
+            name: "",
+            abbr: "",
+            decimal: "",
+            address: "",
+            logo: ""
+        }
+        const chainsInfo = this.isTestNetwork ? TestChainInfo : MainChainInfo;
+        if (tokens && tokens.length) {
+            for (let i = 0; i < tokens.length; i++) {
+                if (tokenAddress === tokens[i]["contract_address"]) {
+                    let updateTokenAddress = tokens[i]["contract_address"];
+                    if (tokens[i]["contract_ticker_symbol"] === "PHOTON") {
+                        updateTokenAddress = chainsInfo["evmos"].contractAddress;
+                    }
+                    if (tokens[i]["contract_ticker_symbol"] === "BNBT") {
+                        updateTokenAddress = chainsInfo["bnb"].contractAddress;
+                    }
+                    if (tokens[i]["contract_ticker_symbol"] === "BNB") {
+                        updateTokenAddress = chainsInfo["bnb"].contractAddress;
+                    }
+                    if (tokens[i]["contract_ticker_symbol"] === "MATIC") {
+                        updateTokenAddress = chainsInfo["polygon"].contractAddress;
+                    }
+                    token = {
+                        chainId: this.token.chainID,
+                        amount: tokens[i]["quote"],
+                        balance: tokens[i]["balance"],
+                        name: tokens[i]["contract_name"],
+                        abbr: tokens[i]["contract_ticker_symbol"],
+                        decimal: tokens[i]["contract_decimals"],
+                        address: updateTokenAddress,
+                        logo: tokens[i]["logo_url"]
+                    }
+                }
+            }
         }
         try {
             const amountBigNumber = ethers.BigNumber.from(amount);
@@ -433,12 +476,13 @@ export class Calamus {
     /**
      * Fee of account or token
      *
-     * @param tokenAddress (string): address of token
      * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
+     * @param tokenAddress (string): address of token
      *
      * @return Promise<string>
      */
-    async feeOf(tokenAddress: string, address?: string): Promise<any> {
+    // @ts-ignore
+    async feeOf(address?: string, tokenAddress: string): Promise<any> {
         if (!address) {
             address = await checkSigner(this.network, this.isTestNetwork);
         }

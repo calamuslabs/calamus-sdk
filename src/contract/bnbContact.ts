@@ -264,16 +264,6 @@ export const createStream = async (account: any,
         let createStreamEvent = result.events[0];
         return {stream_id: createStreamEvent.args.streamId.toString(), trx_hash: createStreamEvent.transactionHash}
     } else {
-        console.log('a',correctAmount,
-            recipient,
-            startTime,
-            stopTime,
-            initialRelease,
-            releaseFrequency,
-            transferPrivilege,
-            cancelPrivilege,
-            tokenAddress,
-            {value: correctAmount})
         let createStreamRequest = await calamusContract.createStream(
             correctAmount,
             recipient,

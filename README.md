@@ -31,7 +31,8 @@ import {Calamus} from "calamus-sdk";
 const CalamusInstance = new Calamus('bnb', false, 'covalent_key');
 ```
 
-_You can come https://www.covalenthq.com/platform/#/auth/register/, register an account then get API key to provide to Calamus Initial_
+_You can come https://www.covalenthq.com/platform/#/auth/register/, register an account then get API key to provide to
+Calamus Initial_
 
 ## Create Stream
 
@@ -48,10 +49,9 @@ _You can come https://www.covalenthq.com/platform/#/auth/register/, register an 
  * @param releaseFrequencyType (number): unit of releaseFrequency, 1: second, 2: minute, 3: hour, 4: day, 5: week, 6: month, 7: year
  * @param transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
  * @param cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
- * @param tokenAddress (string): amount of token user want to stream
  * @param contractTitle (string): title of the contract
  * @param emailAddress (string): email will be notified when stream change
- * @param tokenSymbol (string): symbol of token like 'BNB', 'BNBT', ...
+ * @param tokenAddress: contract address of token want to stream
  *
  * @return Promise<{
  *  stream_id: id of stream, 
@@ -66,44 +66,48 @@ createCalamusStream({
     stopTime,
     initialRelease,
     releaseFrequency,
+    releaseFrequencyType,
     transferPrivilege,
     cancelPrivilege,
     contractTitle,
     emailAddress,
-    tokenSymbol
+    tokenAddress
 });
 
 const CalamusInstance = new Calamus('bnb', false);
 CalamusInstance.createCalamusStream({
-    releaseAmount: 30,
+    releaseAmount: 1,
     recipient: "0xF49f0bDbA38c55b65728c3C83b65DFd30A2e0C40",
     startTime: 1671624853,
     stopTime: 1671724853,
     initialRelease: 0,
     releaseFrequency: 1,
+    releaseFrequencyType: 1,
     transferPrivilege: 1,
     cancelPrivilege: 1,
     contractTitle: 'New Contract 01',
     emailAddress: 'example@gmail.com',
-    tokenSymbol: "BNBT"
+    tokenAddress: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
 })
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
 or use async await function
+
 ```typescript
 const result = await CalamusInstance.createCalamusStream({
-    releaseAmount: 30,
+    releaseAmount: 1,
     recipient: "0xF49f0bDbA38c55b65728c3C83b65DFd30A2e0C40",
     startTime: 1671624853,
     stopTime: 1671724853,
     initialRelease: 0,
     releaseFrequency: 1,
+    releaseFrequencyType: 1,
     transferPrivilege: 1,
     cancelPrivilege: 1,
     contractTitle: 'New Contract 01',
     emailAddress: 'example@gmail.com',
-    tokenSymbol: "BNBT"
+    tokenAddress: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
 })
 ```
 
@@ -152,6 +156,7 @@ CalamusInstance.getCalamusIncomingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e03
 ```
 
 or use async await function
+
 ```typescript
 const incomingList = await CalamusInstance.getCalamusIncomingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
 ```
@@ -201,6 +206,7 @@ CalamusInstance.getCalamusOutgoingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e03
 ```
 
 or use async await function
+
 ```typescript
 const outGoingList = await CalamusInstance.getCalamusOutgoingStream("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
 ```
@@ -247,6 +253,7 @@ CalamusInstance.getCalamusStreamByID("24")
 ```
 
 or use async await function
+
 ```typescript
 const stream = await CalamusInstance.getCalamusStreamByID("24")
 ```
@@ -271,6 +278,7 @@ CalamusInstance.withdrawCalamusStream("2", "10", false)
 ```
 
 or use async await function
+
 ```typescript
 const result = await CalamusInstance.withdrawCalamusStream("2", "10", false)
 ```
@@ -294,10 +302,10 @@ CalamusInstance.cancelCalamusStream("24")
 ```
 
 or use async await function
+
 ```typescript
 const result = await CalamusInstance.cancelCalamusStream("24")
 ```
-
 
 ## Transfer Stream
 
@@ -319,6 +327,7 @@ CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87a4845C977eADc789B479e
 ```
 
 or use async await function
+
 ```typescript
 const result = await CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87a4845C977eADc789B479e80af0A0")
 ```
@@ -329,8 +338,8 @@ const result = await CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87
 /**
  * Topup Stream.
  *
+ * @param tokenAddress: address of token want to top up
  * @param streamID (string): ID of stream
- * @param tokenSymbol (string): amount of token user want to  top up
  * @param amount (string): amount want to top up
  *
  * @return Promise<{
@@ -339,13 +348,14 @@ const result = await CalamusInstance.transferCalamusStream("23", "0x9d7d3aD17b87
  * }>
  */
 
-CalamusInstance.topupCalamusStream("BNBT", "26", "10")
+CalamusInstance.topupCalamusStream("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "26", "10")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
 or use async await function
+
 ```typescript
-const result = await CalamusInstance.topupCalamusStream("BNBT", "26", "10")
+const result = await CalamusInstance.topupCalamusStream("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "26", "10")
 ```
 
 ## Get Balance
@@ -365,6 +375,7 @@ CalamusInstance.balanceOf("15", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
 ```
 
 or use async await function
+
 ```typescript
 const result = await CalamusInstance.balanceOf("BNBT", "26", "10")
 ```
@@ -375,20 +386,21 @@ const result = await CalamusInstance.balanceOf("BNBT", "26", "10")
 /**
  * Balance of user in stream.
  *
+ * @param address (string): wallet address (if this not provide, address of current account on metamask will be use)
  * @param tokenAddress (string): address of token
- * @param address (string): wallet address (if this is not provided, address of current account on metamask will be used). 
  *
  * @return Promise<string: fee of stream>
  */
 
-CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
+CalamusInstance.feeOf("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36", "0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04")
     .then(result => console.log('Result: ', result)).catch(error => console.log('Error: ', error));
 ```
 
 or use async await function
 
 ```typescript
-const result = await CalamusInstance.feeOf("0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04", "0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36")
+const result = await CalamusInstance.feeOf("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36", "0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04")
 ```
 
-_address_ always takes precedence over _tokenAddress_, if provided _address_ not return fee, then _tokenAddress_ will be used 
+_address_ always takes precedence over _tokenAddress_, if provided _address_ not return fee, then _tokenAddress_ will be
+used 
