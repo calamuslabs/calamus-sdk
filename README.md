@@ -12,10 +12,9 @@ This package allows you to `createCalamusStream`, `getCalamusIncomingStream`, `g
 
 `npm i calamus-sdk`
 
-## Inialize
+## Initialize
 
-Before creating and interacting with Calamus streams, an instance must be created. All streams functions are methods
-following on this instance.
+Before creating and interacting with Calamus streams, an instance must be created. All streams functions are methods following on this instance.
 
 ```javascript
 import {Calamus} from "calamus-sdk";
@@ -31,8 +30,7 @@ import {Calamus} from "calamus-sdk";
 const CalamusInstance = new Calamus('bnb', false, 'covalent_key');
 ```
 
-_You can come https://www.covalenthq.com/platform/#/auth/register/, register an account then get API key to provide to
-Calamus Initial_
+_You can register a Covalent API key at https://www.covalenthq.com/platform/#/auth/register/, and provide it to this command._
 
 ## Create Stream
 
@@ -45,13 +43,13 @@ Calamus Initial_
  * @param startTime (number): stream will start at (second),
  * @param stopTime (number): stream will end at (second),
  * @param initialRelease (number):  initial token recipient can get when withdraw ( percent )
- * @param releaseFrequency (number): number of time between each release (releaseFrequencyType)
+ * @param releaseFrequency (number): number of "releaseFrequencyType" between each release
  * @param releaseFrequencyType (number): unit of releaseFrequency, 1: second, 2: minute, 3: hour, 4: day, 5: week, 6: month, 7: year
  * @param transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
  * @param cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
- * @param contractTitle (string): title of the contract
- * @param emailAddress (string): email will be notified when stream change
- * @param tokenAddress: contract address of token want to stream
+ * @param contractTitle (string): title of the contract (optional)
+ * @param emailAddress (string): email address of recipient (optional)
+ * @param tokenAddress:contract address of token sender want to stream
  *
  * @return Promise<{
  *  stream_id: id of stream, 
@@ -124,8 +122,8 @@ const result = await CalamusInstance.createCalamusStream({
  *  cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
  *  chain (string): chain's name,
  *  contractTitle (string): title of contract 
- *  emailAddress (string): email will get notify in contract
- *  initialRelease (string): number of initial token will get when withdraw
+ *  emailAddress (string): email address of recipient
+ *  initialRelease (string): number of initial token recipient will get when withdraw
  *  isVesting (boolean): false
  *  originStatus (number): original status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
  *  status (number): current status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
@@ -139,14 +137,14 @@ const result = await CalamusInstance.createCalamusStream({
  *  startTime (number): time stream start
  *  stopTime (number): time stream end
  *  streamId (number): id of stream
- *  tokenAbbr (string): abbreviation for token  
+ *  tokenAbbr (string): abbreviation for token 
  *  tokenDecimal (number): decimal of token
  *  tokenId (string): address of token
  *  tokenLogo (string): Logo of token (URL)
  *  transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
  *  trxHash (string): hash of transaction
  *  type (string): type of stream in list (Icoming/Outgoing)
- *  withdrawAmount (string): number of token user have withdrawn
+ *  withdrawAmount (string): number of token recipient have withdrawn
  * }>
  * ]>
  */
@@ -174,12 +172,12 @@ const incomingList = await CalamusInstance.getCalamusIncomingStream("0xB775fa6D4
  *  cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
  *  chain (string): chain's name,
  *  contractTitle (string): title of contract 
- *  emailAddress (string): email will get notify in contract
- *  initialRelease (string): number of initial token will get when withdraw
+ *  emailAddress (string): email address of recipient
+ *  initialRelease (string): number of initial token recipient will get when withdraw
  *  isVesting (boolean): false
  *  originStatus (number): original status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
  *  status (number): current status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
- *  ratePerTime (string): number token stream in one unit time,
+ *  ratePerTime (string): number token stream in one unit time
  *  recipient (string): wallet address of recipient
  *  sender (string): wallet address of sender
  *  releaseAmount (string): number of total token in stream
@@ -196,7 +194,7 @@ const incomingList = await CalamusInstance.getCalamusIncomingStream("0xB775fa6D4
  *  transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
  *  trxHash (string): hash of transaction
  *  type (string): type of stream in list (Icoming/Outgoing)
- *  withdrawAmount (string): number of token user have withdrawn
+ *  withdrawAmount (string): number of token recipient have withdrawn
  * }>
  * ]>
  */
@@ -223,8 +221,8 @@ const outGoingList = await CalamusInstance.getCalamusOutgoingStream("0xB775fa6D4
  *  cancelPrivilege (number): who can cancel this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither",
  *  chain (string): chain's name,
  *  contractTitle (string): title of contract 
- *  emailAddress (string): email will get notify in contract
- *  initialRelease (string): number of initial token will get when withdraw
+ *  emailAddress (string): email address of recipient
+ *  initialRelease (string): number of initial token recipient will get when withdraw
  *  isVesting (boolean): false
  *  originStatus (number): original status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
  *  status (number): current status of stream, 1: "Not Started", 2: "Cancelled", 3: "Completed", 4: "Processing"
@@ -245,7 +243,7 @@ const outGoingList = await CalamusInstance.getCalamusOutgoingStream("0xB775fa6D4
  *  transferPrivilege (number): who can transfer this stream, 0: "Only Recipient",1: "Only Sender",2: "Both",3: "Neither"
  *  trxHash (string): hash of transaction
  *  type (string): type of stream in list (Icoming/Outgoing)
- *  withdrawAmount (string): number of token user have withdrawn
+ *  withdrawAmount (string): number of token recipient have withdrawn
  * }>
  */
 CalamusInstance.getCalamusStreamByID("24")
@@ -401,6 +399,3 @@ or use async await function
 ```typescript
 const result = await CalamusInstance.feeOf("0xB775fa6D48ec0e8394bbD6bE52956Bde7e036a36", "0x599B507bcfC75C08dF2726Cb6EC533cef74a4E04")
 ```
-
-_address_ always takes precedence over _tokenAddress_, if provided _address_ not return fee, then _tokenAddress_ will be
-used 
